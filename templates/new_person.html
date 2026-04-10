@@ -19,6 +19,34 @@
     button, a.btn { display: inline-block; border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
     button { background: #004b87; color: #fff; }
     a.btn { background: #eef2f7; color: #1a1a1a; border: 1px solid #cbd5e1; }
+    .label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .help-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid #004b87;
+      background: #e7f0ff;
+      color: #004b87;
+      font-weight: 800;
+      line-height: 1;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .bmi-calc {
+      margin-top: 8px;
+      border: 1px solid #d8dee6;
+      border-radius: 10px;
+      padding: 10px;
+      background: #f8fbff;
+      display: none;
+    }
+    .bmi-calc.open { display: block; }
+    .bmi-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; }
+    .bmi-note { font-size: 0.82rem; color: #4a5568; margin-top: 6px; }
+    .bmi-result { margin-top: 8px; font-size: 0.9rem; font-weight: 700; color: #004b87; }
   </style>
 </head>
 <body>
@@ -40,7 +68,34 @@
           <div><label for="sleep_quality">Quality of Sleep (1-10)</label><input id="sleep_quality" name="sleep_quality" type="number" min="1" max="10" value="7" required /></div>
           <div><label for="activity">Physical Activity (min/day)</label><input id="activity" name="activity" type="number" min="0" value="60" required /></div>
           <div><label for="stress">Stress Level (1-10)</label><input id="stress" name="stress" type="number" min="1" max="10" value="5" required /></div>
-          <div><label for="bmi_category">BMI Category</label><select id="bmi_category" name="bmi_category" required><option value="">Select</option><option>Underweight</option><option>Normal</option><option>Overweight</option><option>Obese</option></select></div>
+          <div>
+            <div class="label-row">
+              <label for="bmi_category" style="margin-bottom:0;">BMI Category</label>
+              <button type="button" class="help-btn" id="toggle-bmi-calc" aria-label="Open BMI calculator" title="Open BMI calculator">?</button>
+            </div>
+            <select id="bmi_category" name="bmi_category" required>
+              <option value="">Select</option>
+              <option>Underweight</option>
+              <option>Normal</option>
+              <option>Overweight</option>
+              <option>Obese</option>
+            </select>
+            <div class="bmi-calc" id="bmi-calc-panel">
+              <div class="bmi-grid">
+                <div>
+                  <label for="bmi_height">Height (cm)</label>
+                  <input id="bmi_height" type="number" min="80" max="250" value="170" />
+                </div>
+                <div>
+                  <label for="bmi_weight">Weight (kg)</label>
+                  <input id="bmi_weight" type="number" min="20" max="300" value="70" />
+                </div>
+                <button type="button" id="calc-bmi-btn">Calculate</button>
+              </div>
+              <p class="bmi-note">Enter height and weight, then click Calculate. The category will be selected automatically.</p>
+              <div class="bmi-result" id="bmi-result"></div>
+            </div>
+          </div>
           <div><label for="blood_pressure">Blood Pressure</label><input id="blood_pressure" name="blood_pressure" value="120/80" required /></div>
           <div><label for="heart_rate">Heart Rate</label><input id="heart_rate" name="heart_rate" type="number" min="30" value="75" required /></div>
           <div><label for="daily_steps">Daily Steps</label><input id="daily_steps" name="daily_steps" type="number" min="0" value="8000" required /></div>
@@ -53,5 +108,40 @@
       </form>
     </div>
   </div>
+  <script>
+    (function () {
+      const toggleBtn = document.getElementById("toggle-bmi-calc");
+      const panel = document.getElementById("bmi-calc-panel");
+      const calcBtn = document.getElementById("calc-bmi-btn");
+      const heightInput = document.getElementById("bmi_height");
+      const weightInput = document.getElementById("bmi_weight");
+      const bmiCategory = document.getElementById("bmi_category");
+      const result = document.getElementById("bmi-result");
+
+      const bmiToCategory = (bmi) => {
+        if (bmi < 18.5) return "Underweight";
+        if (bmi < 25) return "Normal";
+        if (bmi < 30) return "Overweight";
+        return "Obese";
+      };
+
+      toggleBtn.addEventListener("click", () => {
+        panel.classList.toggle("open");
+      });
+
+      calcBtn.addEventListener("click", () => {
+        const h = Number(heightInput.value);
+        const w = Number(weightInput.value);
+        if (!h || !w || h <= 0 || w <= 0) {
+          result.textContent = "Please enter valid height and weight values.";
+          return;
+        }
+        const bmi = w / ((h / 100) ** 2);
+        const category = bmiToCategory(bmi);
+        bmiCategory.value = category;
+        result.textContent = `BMI: ${bmi.toFixed(1)} -> ${category} (auto-selected).`;
+      });
+    })();
+  </script>
 </body>
 </html>
