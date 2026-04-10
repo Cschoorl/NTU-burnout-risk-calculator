@@ -157,7 +157,7 @@ def compute_dimension_scores(person: pd.Series) -> list[dict]:
             "key": "sleep_duration",
             "label": "Sleep Duration (hours)",
             "score": _clamp_score(dur_h),
-            "hint": f"{dur:.1f} u",
+            "hint": f"{dur:.1f} h",
         }
     )
 
@@ -168,7 +168,7 @@ def compute_dimension_scores(person: pd.Series) -> list[dict]:
             "key": "activity",
             "label": "Physical Activity (min/day)",
             "score": _clamp_score(act_h),
-            "hint": f"{int(act)} min",
+            "hint": f"{int(act)} min/day",
         }
     )
 
